@@ -223,13 +223,13 @@ export function CardDetailPage({ card, cards, onBack, onCardClick }: CardDetailP
             {relatedCards.length > 0 && (
               <div className="mt-7">
                 <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Other Cards</p>
-                <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="mt-3 space-y-3">
                   {relatedCards.map((relatedCard) => (
                     <button
                       key={relatedCard.id}
                       type="button"
                       onClick={() => onCardClick(relatedCard)}
-                      className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
+                      className="w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
                     >
                       <div className="w-full" style={{ aspectRatio: '85.6 / 53.98' }}>
                         <SmartImage
