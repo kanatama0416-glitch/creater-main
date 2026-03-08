@@ -59,7 +59,7 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
           >
             <div className="h-full w-full overflow-hidden rounded-xl">
               <SmartImage
-                src={featuredCards[0]?.image_url ?? '/card-images/card-01.png'}
+                src={featuredCards[0]?.image_url ?? './card-images/card-01.png'}
                 alt={featuredCards[0]?.title ?? 'Sample 01'}
                 className="h-full w-full object-cover"
               />
@@ -73,7 +73,7 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
           >
             <div className="h-full w-full overflow-hidden rounded-xl">
               <SmartImage
-                src={featuredCards[1]?.image_url ?? '/card-images/card-02.png'}
+                src={featuredCards[1]?.image_url ?? './card-images/card-02.png'}
                 alt={featuredCards[1]?.title ?? 'Sample 02'}
                 className="h-full w-full object-cover"
               />
@@ -87,7 +87,7 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
           >
             <div className="h-full w-full overflow-hidden rounded-xl">
               <SmartImage
-                src={featuredCards[2]?.image_url ?? '/card-images/card-03.png'}
+                src={featuredCards[2]?.image_url ?? './card-images/card-03.png'}
                 alt={featuredCards[2]?.title ?? 'Sample 03'}
                 className="h-full w-full object-cover"
               />
@@ -100,3 +100,4 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
     </>
   );
 }
+
