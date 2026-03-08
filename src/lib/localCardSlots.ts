@@ -31,7 +31,7 @@ export const localCardSlots: Card[] = Array.from({ length: 16 }, (_, index) => {
     creator_id: creatorId,
     title: `カード画像スロット ${slotNumber}`,
     description: `public/card-images/card-${slotNumber}.png を好きな画像に差し替えてください。`,
-    image_url: `/card-images/card-${slotNumber}.png`,
+    image_url: `./card-images/card-${slotNumber}.png`,
     concept: 'このカードは仮表示です。画像ファイルを置き換えると一覧に反映されます。',
     created_at: new Date(0).toISOString(),
     creator: creator
