@@ -16,6 +16,8 @@ export interface Creator {
   twitter_url: string | null;
   instagram_url: string | null;
   website_url: string | null;
+  note_url: string | null;
+  youtube_url: string | null;
   avatar_url: string | null;
   comment: string | null;
   created_at: string;

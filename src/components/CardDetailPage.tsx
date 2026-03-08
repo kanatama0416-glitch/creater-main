@@ -1,11 +1,13 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Globe, Instagram, Twitter } from 'lucide-react';
+import { ArrowLeft, Globe, Instagram, Twitter, FileText, Youtube } from 'lucide-react';
 import { Card } from '../lib/supabase';
 import { SmartImage } from './SmartImage';
 
 interface CardDetailPageProps {
   card: Card;
+  cards: Card[];
   onBack: () => void;
+  onCardClick: (card: Card) => void;
 }
 
 type DetailTab = 'profile' | 'activity' | 'event';
@@ -18,8 +20,19 @@ const defaultCreatorStory = {
   role: 'Illustrator / Digital Artist'
 };
 
-export function CardDetailPage({ card, onBack }: CardDetailPageProps) {
+const creatorGenreByName: Record<string, string> = {
+  おがわこうた: 'キャラクター',
+  テペソのトム: 'キャラクター',
+  庭野リサ: 'キャラクター',
+  'Ryusuke Sano': '現代アート',
+  CHiNPAN: '伝統',
+  'dana wadaharuna': '生活'
+};
+
+export function CardDetailPage({ card, cards, onBack, onCardClick }: CardDetailPageProps) {
   const creator = card.creator ?? defaultCreatorStory;
+  const creatorGenre = creatorGenreByName[creator.name];
+  const creatorRole = (card.creator as any)?.role || defaultCreatorStory.role;
   const [activeTab, setActiveTab] = useState<DetailTab>('profile');
   const [imageRatio, setImageRatio] = useState(85.6 / 53.98);
   const snsLinks = [
@@ -37,6 +50,16 @@ export function CardDetailPage({ card, onBack }: CardDetailPageProps) {
       label: 'Website',
       href: card.creator?.website_url || 'https://example.com',
       icon: Globe
+    },
+    {
+      label: 'note',
+      href: card.creator?.note_url || 'https://note.com',
+      icon: FileText
+    },
+    {
+      label: 'YouTube',
+      href: card.creator?.youtube_url || 'https://www.youtube.com',
+      icon: Youtube
     }
   ];
 
@@ -69,6 +92,23 @@ export function CardDetailPage({ card, onBack }: CardDetailPageProps) {
     ],
     []
   );
+
+  const relatedCards = useMemo(() => {
+    const currentCreatorId = card.creator?.id || card.creator_id;
+    const currentCreatorName = card.creator?.name;
+
+    return cards
+      .filter((candidate) => {
+        if (candidate.id === card.id) return false;
+
+        if (currentCreatorId) {
+          return candidate.creator_id === currentCreatorId || candidate.creator?.id === currentCreatorId;
+        }
+
+        return Boolean(currentCreatorName && candidate.creator?.name === currentCreatorName);
+      })
+      .slice(0, 6);
+  }, [cards, card.id, card.creator?.id, card.creator?.name, card.creator_id]);
 
   return (
     <div className="min-h-screen bg-[#fdfbfb] pb-28">
@@ -122,7 +162,13 @@ export function CardDetailPage({ card, onBack }: CardDetailPageProps) {
             )}
           </div>
           <h1 className="text-xl font-bold text-slate-800">{creator.name}</h1>
-          <p className="mt-1 text-xs text-slate-400">{(card.creator as any)?.role || defaultCreatorStory.role}</p>
+          {creatorGenre ? (
+            <p className="mt-2 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-semibold tracking-wide text-indigo-600">
+              ジャンル: {creatorGenre}
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-slate-400">{creatorRole}</p>
+          )}
         </div>
       </section>
 
@@ -158,20 +204,45 @@ export function CardDetailPage({ card, onBack }: CardDetailPageProps) {
           <div className="leading-relaxed text-slate-600 [animation:fadein_.25s_ease]">
             <h3 className="mb-2 font-bold italic text-slate-800">About Me</h3>
             <p className="text-sm">{creator.bio || defaultCreatorStory.bio}</p>
-            <div className="mt-5 flex items-center gap-3">
+            <div className="mt-5 flex items-start gap-3">
               {snsLinks.map(({ label, href, icon: Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
+                <div key={label} className="flex w-14 flex-col items-center gap-1">
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                  <span className="text-[10px] leading-none text-slate-500">{label}</span>
+                </div>
               ))}
             </div>
+            {relatedCards.length > 0 && (
+              <div className="mt-7">
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Other Cards</p>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {relatedCards.map((relatedCard) => (
+                    <button
+                      key={relatedCard.id}
+                      type="button"
+                      onClick={() => onCardClick(relatedCard)}
+                      className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 transition hover:-translate-y-0.5 hover:shadow-md"
+                    >
+                      <div className="w-full" style={{ aspectRatio: '85.6 / 53.98' }}>
+                        <SmartImage
+                          src={relatedCard.image_url}
+                          alt={relatedCard.title}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

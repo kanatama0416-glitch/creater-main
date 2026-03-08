@@ -1,4 +1,4 @@
-﻿import { X, Twitter, Instagram, Globe } from 'lucide-react';
+﻿import { X, Twitter, Instagram, Globe, FileText, Youtube } from 'lucide-react';
 import { Card } from '../lib/supabase';
 
 interface CardDetailModalProps {
@@ -61,36 +61,76 @@ export function CardDetailModal({ card, onClose }: CardDetailModalProps) {
                       "{card.creator.comment}"
                     </p>
                   )}
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap items-start gap-3">
                     {card.creator.twitter_url && (
-                      <a
-                        href={card.creator.twitter_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-600 transition-colors"
-                      >
-                        <Twitter className="w-5 h-5" />
-                      </a>
+                      <div className="flex w-14 flex-col items-center gap-1">
+                        <a
+                          href={card.creator.twitter_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:text-blue-600 transition-colors"
+                          aria-label="X"
+                        >
+                          <Twitter className="w-5 h-5" />
+                        </a>
+                        <span className="text-[10px] leading-none text-gray-500">X</span>
+                      </div>
                     )}
                     {card.creator.instagram_url && (
-                      <a
-                        href={card.creator.instagram_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-pink-500 hover:text-pink-600 transition-colors"
-                      >
-                        <Instagram className="w-5 h-5" />
-                      </a>
+                      <div className="flex w-14 flex-col items-center gap-1">
+                        <a
+                          href={card.creator.instagram_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-pink-500 hover:text-pink-600 transition-colors"
+                          aria-label="Instagram"
+                        >
+                          <Instagram className="w-5 h-5" />
+                        </a>
+                        <span className="text-[10px] leading-none text-gray-500">Instagram</span>
+                      </div>
                     )}
                     {card.creator.website_url && (
-                      <a
-                        href={card.creator.website_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-600 hover:text-gray-700 transition-colors"
-                      >
-                        <Globe className="w-5 h-5" />
-                      </a>
+                      <div className="flex w-14 flex-col items-center gap-1">
+                        <a
+                          href={card.creator.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-600 hover:text-gray-700 transition-colors"
+                          aria-label="Website"
+                        >
+                          <Globe className="w-5 h-5" />
+                        </a>
+                        <span className="text-[10px] leading-none text-gray-500">Website</span>
+                      </div>
+                    )}
+                    {card.creator.note_url && (
+                      <div className="flex w-14 flex-col items-center gap-1">
+                        <a
+                          href={card.creator.note_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-emerald-600 hover:text-emerald-700 transition-colors"
+                          aria-label="note"
+                        >
+                          <FileText className="w-5 h-5" />
+                        </a>
+                        <span className="text-[10px] leading-none text-gray-500">note</span>
+                      </div>
+                    )}
+                    {card.creator.youtube_url && (
+                      <div className="flex w-14 flex-col items-center gap-1">
+                        <a
+                          href={card.creator.youtube_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-red-600 hover:text-red-700 transition-colors"
+                          aria-label="YouTube"
+                        >
+                          <Youtube className="w-5 h-5" />
+                        </a>
+                        <span className="text-[10px] leading-none text-gray-500">YouTube</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -124,3 +164,4 @@ export function CardDetailModal({ card, onClose }: CardDetailModalProps) {
     </div>
   );
 }
+

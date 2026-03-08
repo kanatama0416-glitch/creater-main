@@ -8,11 +8,22 @@ import { CardDetailPage } from './components/CardDetailPage';
 import { SupportSection } from './components/SupportSection';
 import { FAQSection } from './components/FAQSection';
 
+const creatorGenreByName: Record<string, string> = {
+  おがわこうた: 'キャラクター',
+  テペソのトム: 'キャラクター',
+  庭野リサ: 'キャラクター',
+  'Ryusuke Sano': '現代アート',
+  CHiNPAN: '伝統',
+  'dana wadaharuna': '生活'
+};
+
 function App() {
+  const genreOptions = ['キャラクター', '現代アート', '伝統', '生活'];
   const [cards, setCards] = useState<Card[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -58,6 +69,15 @@ function App() {
   const randomizedCards = useMemo(() => {
     return [...displayCards].sort(() => Math.random() - 0.5);
   }, [displayCards]);
+  const filteredCards = useMemo(() => {
+    if (!selectedGenre) return randomizedCards;
+
+    return randomizedCards.filter((card) => {
+      const creatorName = card.creator?.name;
+      if (!creatorName) return false;
+      return creatorGenreByName[creatorName] === selectedGenre;
+    });
+  }, [randomizedCards, selectedGenre]);
 
   if (loading) {
     return (
@@ -71,7 +91,14 @@ function App() {
   }
 
   if (selectedCard) {
-    return <CardDetailPage card={selectedCard} onBack={() => setSelectedCard(null)} />;
+    return (
+      <CardDetailPage
+        card={selectedCard}
+        cards={displayCards}
+        onBack={() => setSelectedCard(null)}
+        onCardClick={setSelectedCard}
+      />
+    );
   }
 
   return (
@@ -81,11 +108,25 @@ function App() {
       <section className="pt-3 pb-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-gray-600 text-lg">
-              {'\u76f4\u611f\u7684\u306a\u308f\u304f\u308f\u304f\u3092\u63a2\u3057\u3066\u307f\u307e\u3057\u3087\u3046'}
-            </p>
+            <p className="text-gray-600 text-lg">{'ワクワクを探してみましょう'}</p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              {genreOptions.map((genre) => (
+                <button
+                  key={genre}
+                  type="button"
+                  onClick={() => setSelectedGenre((prev) => (prev === genre ? null : genre))}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                    selectedGenre === genre
+                      ? 'bg-pink-100 text-pink-700'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
           </div>
-          <CardGrid cards={randomizedCards} onCardClick={setSelectedCard} />
+          <CardGrid cards={filteredCards} onCardClick={setSelectedCard} />
         </div>
       </section>
 

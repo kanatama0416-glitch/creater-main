@@ -41,7 +41,7 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
       <section className="bg-slate-50 px-6 pb-2">
         <section className="py-10 text-center">
           <h2 className="text-2xl font-bold mb-4 italic">
-            あなたの「わくわく」が、
+            あなたの「ワクワク」が、
             <br />
             クリエイターの力になる。
           </h2>
