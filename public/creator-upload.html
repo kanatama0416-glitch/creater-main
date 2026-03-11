@@ -234,7 +234,7 @@
     <div class="logo">CREATOR'S CARD</div>
 
     <div class="container">
-      <href="index.html" class="back-link">戻る</a>
+      <a href="index.html" class="back-link">戻る</a>
       <div class="title-area">
         <h1>「ワクワク」を登録する。</h1>
         <p>SHARE YOUR MASTERPIECE</p>
@@ -286,7 +286,7 @@
     </div>
 
     <p class="footer-text">ワクワクするデザインをシェアしましょう</p>
-    <script src="supabase-config.js"></script>
+    <script src="/supabase-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
     <script>
       const uploadWrapper = document.querySelector(".file-upload-wrapper");
@@ -398,7 +398,7 @@
               previewImage.src = "";
               uploadWrapper?.classList.remove("has-preview");
             }
-            setStatus("投稿を受け付けました。審査完了後に反映されます。", "success");
+            setStatus("投稿を受け付けました。ページに反映されます。", "success");
           } catch (error) {
             const message =
               error?.message || "投稿に失敗しました。時間をおいて再度お試しください。";
