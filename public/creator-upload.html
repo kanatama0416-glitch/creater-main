@@ -314,6 +314,7 @@
       const form = document.getElementById("creator-upload-form");
       const statusEl = document.getElementById("upload-status");
       const submitButton = form?.querySelector("button[type='submit']");
+      let isSubmitting = false;
 
       function setStatus(message, type) {
         if (!statusEl) return;
@@ -339,6 +340,8 @@
 
         form?.addEventListener("submit", async (event) => {
           event.preventDefault();
+          if (isSubmitting) return;
+          isSubmitting = true;
           setStatus("", null);
           setSubmitting(true);
 
@@ -350,12 +353,14 @@
 
           if (!(imageFile instanceof File) || !imageFile.name) {
             setStatus("画像ファイルを選択してください。", "error");
+            isSubmitting = false;
             setSubmitting(false);
             return;
           }
 
           if (!creatorName) {
             setStatus("クリエイター名を入力してください。", "error");
+            isSubmitting = false;
             setSubmitting(false);
             return;
           }
@@ -404,6 +409,7 @@
               error?.message || "投稿に失敗しました。時間をおいて再度お試しください。";
             setStatus(message, "error");
           } finally {
+            isSubmitting = false;
             setSubmitting(false);
           }
         });
