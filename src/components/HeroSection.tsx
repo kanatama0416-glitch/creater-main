@@ -65,7 +65,7 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
           >
             <div className="h-full w-full overflow-hidden rounded-xl">
               <SmartImage
-                src={featuredCards[0]?.image_url ?? '/card-images/card-01.png'}
+                src={featuredCards[0]?.image_url ?? 'card-images/card-01.png'}
                 alt={featuredCards[0]?.title ?? 'Sample 01'}
                 className="h-full w-full object-cover"
               />
@@ -106,3 +106,4 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
     </>
   );
 }
+
