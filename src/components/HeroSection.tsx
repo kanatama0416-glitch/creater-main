@@ -41,7 +41,7 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
       <section className="bg-slate-50 px-6 pb-2">
         <section className="relative py-10 text-center">
           <a
-            href="/creator-upload.html"
+            href="creator-upload.html"
             className="absolute right-0 top-2 rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow"
           >
             作品を登録する
@@ -106,4 +106,5 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
     </>
   );
 }
+
 
