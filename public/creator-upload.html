@@ -240,7 +240,7 @@
         <p>SHARE YOUR MASTERPIECE</p>
       </div>
 
-      <form id="creator-upload-form" action="#" method="POST">
+      <form id="creator-upload-form" action="#" novalidate>
         <div class="form-group">
           <label>作品画像</label>
           <div class="file-upload-wrapper">
@@ -314,7 +314,6 @@
       const form = document.getElementById("creator-upload-form");
       const statusEl = document.getElementById("upload-status");
       const submitButton = form?.querySelector("button[type='submit']");
-      let isSubmitting = false;
 
       function setStatus(message, type) {
         if (!statusEl) return;
@@ -330,26 +329,27 @@
         submitButton.style.cursor = isSubmitting ? "not-allowed" : "pointer";
       }
 
-      if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
-        setStatus("Supabase設定が見つかりません。supabase-config.jsを確認してください。", "error");
-      } else if (window.supabase?.createClient) {
+      form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+          setStatus("Supabase設定が見つかりません。supabase-config.jsを確認してください。", "error");
+          return;
+        }
+        if (!window.supabase?.createClient) {
+          setStatus("Supabaseライブラリが読み込めませんでした。ページを再読み込みしてください。", "error");
+          return;
+        }
+
         const supabase = window.supabase.createClient(
           window.SUPABASE_URL,
           window.SUPABASE_ANON_KEY
         );
 
-        if (form && form.dataset.bound === "1") {
-          // Already bound
-        } else if (form) {
-          form.dataset.bound = "1";
-          form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            if (isSubmitting) return;
-            isSubmitting = true;
-            setStatus("", null);
-            setSubmitting(true);
+        setStatus("", null);
+        setSubmitting(true);
 
-          const formData = new FormData(form);
+        const formData = new FormData(form);
           const imageFile = formData.get("image");
           const creatorName = (formData.get("name") || "").toString().trim();
           const genre = (formData.get("genre") || "").toString();
@@ -357,21 +357,33 @@
 
           if (!(imageFile instanceof File) || !imageFile.name) {
             setStatus("画像ファイルを選択してください。", "error");
-            isSubmitting = false;
             setSubmitting(false);
             return;
           }
 
           if (!creatorName) {
             setStatus("クリエイター名を入力してください。", "error");
-            isSubmitting = false;
+            setSubmitting(false);
+            return;
+          }
+
+          if (!genre) {
+            setStatus("ジャンルを選択してください。", "error");
             setSubmitting(false);
             return;
           }
 
           try {
+            const sanitizeFileName = (name) => {
+              const base = name.normalize("NFKD").replace(/[^\x00-\x7F]/g, "");
+              const cleaned = base
+                .replace(/[^a-zA-Z0-9._-]+/g, "-")
+                .replace(/-+/g, "-")
+                .replace(/^-+|-+$/g, "");
+              return cleaned || "upload";
+            };
             const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-            const safeName = imageFile.name.replace(/\s+/g, "-");
+            const safeName = sanitizeFileName(imageFile.name);
             const filePath = `submissions/${timestamp}-${Math.random()
               .toString(36)
               .slice(2)}-${safeName}`;
@@ -413,12 +425,9 @@
               error?.message || "投稿に失敗しました。時間をおいて再度お試しください。";
             setStatus(message, "error");
           } finally {
-            isSubmitting = false;
             setSubmitting(false);
           }
-        });
-        }
-      }
+      });
     </script>
   </body>
 </html>
