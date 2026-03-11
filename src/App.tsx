@@ -206,7 +206,7 @@ function App() {
               </button>
             </div>
             <iframe
-              src="/creator-card-about.html"
+              src="creator-card-about.html"
               title="クリエイターカードについて"
               className="h-full min-h-0 w-full flex-1 border-0 [touch-action:manipulation]"
             />
@@ -218,3 +218,4 @@ function App() {
 }
 
 export default App;
+
