@@ -213,6 +213,21 @@
         color: var(--text-sub);
         margin-top: 30px;
       }
+
+      .status-message {
+        margin-top: 16px;
+        font-size: 0.85rem;
+        color: var(--text-sub);
+        text-align: center;
+      }
+
+      .status-message.error {
+        color: #b91c1c;
+      }
+
+      .status-message.success {
+        color: #047857;
+      }
     </style>
   </head>
   <body>
@@ -225,7 +240,7 @@
         <p>SHARE YOUR MASTERPIECE</p>
       </div>
 
-      <form action="#" method="POST">
+      <form id="creator-upload-form" action="#" method="POST">
         <div class="form-group">
           <label>作品画像</label>
           <div class="file-upload-wrapper">
@@ -266,10 +281,13 @@
         </div>
 
         <button type="submit" class="btn-submit">このデザインを公開する</button>
+        <p class="status-message" id="upload-status"></p>
       </form>
     </div>
 
     <p class="footer-text">ワクワクするデザインをシェアしましょう</p>
+    <script src="/supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
     <script>
       const uploadWrapper = document.querySelector(".file-upload-wrapper");
       const uploadInput = uploadWrapper?.querySelector("input[type='file']");
@@ -289,6 +307,105 @@
             uploadWrapper.classList.add("has-preview");
           };
           reader.readAsDataURL(file);
+        });
+      }
+    </script>
+    <script>
+      const form = document.getElementById("creator-upload-form");
+      const statusEl = document.getElementById("upload-status");
+      const submitButton = form?.querySelector("button[type='submit']");
+
+      function setStatus(message, type) {
+        if (!statusEl) return;
+        statusEl.textContent = message;
+        statusEl.classList.remove("error", "success");
+        if (type) statusEl.classList.add(type);
+      }
+
+      function setSubmitting(isSubmitting) {
+        if (!submitButton) return;
+        submitButton.disabled = isSubmitting;
+        submitButton.style.opacity = isSubmitting ? "0.7" : "1";
+        submitButton.style.cursor = isSubmitting ? "not-allowed" : "pointer";
+      }
+
+      if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+        setStatus("Supabase設定が見つかりません。supabase-config.jsを確認してください。", "error");
+      } else if (window.supabase?.createClient) {
+        const supabase = window.supabase.createClient(
+          window.SUPABASE_URL,
+          window.SUPABASE_ANON_KEY
+        );
+
+        form?.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          setStatus("", null);
+          setSubmitting(true);
+
+          const formData = new FormData(form);
+          const imageFile = formData.get("image");
+          const creatorName = (formData.get("name") || "").toString().trim();
+          const genre = (formData.get("genre") || "").toString();
+          const thoughts = (formData.get("thoughts") || "").toString().trim();
+
+          if (!(imageFile instanceof File) || !imageFile.name) {
+            setStatus("画像ファイルを選択してください。", "error");
+            setSubmitting(false);
+            return;
+          }
+
+          if (!creatorName) {
+            setStatus("クリエイター名を入力してください。", "error");
+            setSubmitting(false);
+            return;
+          }
+
+          try {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+            const safeName = imageFile.name.replace(/\s+/g, "-");
+            const filePath = `submissions/${timestamp}-${Math.random()
+              .toString(36)
+              .slice(2)}-${safeName}`;
+
+            setStatus("画像をアップロード中...", null);
+            const { error: uploadError } = await supabase.storage
+              .from("card-submissions")
+              .upload(filePath, imageFile, { upsert: false });
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicUrlData } = supabase.storage
+              .from("card-submissions")
+              .getPublicUrl(filePath);
+
+            const imageUrl = publicUrlData?.publicUrl;
+            if (!imageUrl) {
+              throw new Error("画像URLの取得に失敗しました。");
+            }
+
+            setStatus("投稿データを送信中...", null);
+            const { error: insertError } = await supabase.from("card_submissions").insert({
+              creator_name: creatorName,
+              genre: genre || null,
+              concept: thoughts || null,
+              image_url: imageUrl
+            });
+
+            if (insertError) throw insertError;
+
+            form.reset();
+            if (previewImage) {
+              previewImage.src = "";
+              uploadWrapper?.classList.remove("has-preview");
+            }
+            setStatus("投稿を受け付けました。審査完了後に反映されます。", "success");
+          } catch (error) {
+            const message =
+              error?.message || "投稿に失敗しました。時間をおいて再度お試しください。";
+            setStatus(message, "error");
+          } finally {
+            setSubmitting(false);
+          }
         });
       }
     </script>
