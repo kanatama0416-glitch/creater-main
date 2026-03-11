@@ -34,6 +34,15 @@ export interface Card {
   creator?: Creator;
 }
 
+export interface CardSubmission {
+  id: string;
+  creator_name: string;
+  genre: string | null;
+  concept: string | null;
+  image_url: string;
+  created_at?: string | null;
+}
+
 export interface FAQ {
   id: string;
   question: string;
