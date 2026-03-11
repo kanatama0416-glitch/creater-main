@@ -31,6 +31,17 @@ function App() {
     fetchData();
   }, []);
 
+  const dedupeSubmissions = (submissions: CardSubmission[]) => {
+    const seen = new Set<string>();
+    return submissions.filter((submission) => {
+      const creatorKey = submission.creator_name?.trim() || 'anonymous';
+      const key = `${submission.image_url}::${creatorKey}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
   const mapSubmissionToCard = (submission: CardSubmission): Card => {
     const creatorName = submission.creator_name?.trim() || '匿名クリエイター';
     const creatorId = `submission-${submission.id}`;
@@ -93,7 +104,8 @@ function App() {
 
       if (faqsError) throw faqsError;
 
-      const mappedSubmissions = (submissionsData || []).map((submission) =>
+      const dedupedSubmissions = dedupeSubmissions(submissionsData || []);
+      const mappedSubmissions = dedupedSubmissions.map((submission) =>
         mapSubmissionToCard(submission)
       );
       const remoteCards = [...mappedSubmissions, ...(cardsData || [])];
