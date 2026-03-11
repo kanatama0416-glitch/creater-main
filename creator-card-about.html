@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>クリエイター応援カード</title>
+  <style>
+    :root{
+      --bg1:#fff8fb;
+      --bg2:#f7f4ff;
+      --bg3:#eef7ff;
+      --text:#2f2940;
+      --sub:#746d86;
+      --white:#ffffff;
+      --pink:#ff7eb6;
+      --purple:#8a6cff;
+      --blue:#7bb8ff;
+      --yellow:#ffd76d;
+      --line:rgba(120, 102, 170, 0.14);
+      --shadow:0 20px 50px rgba(104, 81, 171, 0.14);
+      --radius:30px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      height:100%;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,126,182,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(138,108,255,.16), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(123,184,255,.16), transparent 25%),
+        linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 54%, var(--bg3) 100%);
+    }
+
+    body{
+      overflow:auto;
+    }
+
+    .app{
+      width:100%;
+      max-width:430px;
+      height:100%;
+      margin:0 auto;
+      position:relative;
+      overflow:hidden;
+      background:transparent;
+    }
+
+    .slides{
+      display:flex;
+      width:500%;
+      height:100%;
+      transition:transform .55s cubic-bezier(.22,1,.36,1);
+    }
+
+    .slide{
+      width:20%;
+      height:100%;
+      padding:18px 16px 24px;
+      position:relative;
+      flex-shrink:0;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      gap:12px;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+
+    .progress{
+      display:flex;
+      gap:6px;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:rgba(138,108,255,.18);
+      transition:.25s;
+    }
+
+    .dot.active{
+      width:24px;
+      background:linear-gradient(90deg,var(--pink),var(--purple));
+    }
+
+    .mini{
+      font-size:12px;
+      color:#8c84a1;
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+
+    .card{
+      position:relative;
+      overflow:hidden;
+      border-radius:34px;
+      background:rgba(255,255,255,.74);
+      border:1px solid rgba(255,255,255,.72);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+      padding:22px 18px 20px;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      flex:1;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      width:170px;
+      height:170px;
+      right:-50px;
+      top:-50px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(138,108,255,.18), rgba(138,108,255,0) 70%);
+      pointer-events:none;
+    }
+
+    .card::after{
+      content:"";
+      position:absolute;
+      width:150px;
+      height:150px;
+      left:-50px;
+      bottom:-55px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,126,182,.16), rgba(255,126,182,0) 70%);
+      pointer-events:none;
+    }
+
+    .content{
+      position:relative;
+      z-index:1;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 13px;
+      border-radius:999px;
+      background:rgba(255,255,255,.76);
+      border:1px solid var(--line);
+      font-size:12px;
+      font-weight:800;
+      color:#6b57c7;
+      box-shadow:0 8px 22px rgba(129, 101, 199, .08);
+    }
+
+    h1{
+      margin:18px 0 0;
+      font-size:30px;
+      line-height:1.25;
+      letter-spacing:-0.04em;
+    }
+
+    .accent{
+      background:linear-gradient(135deg,var(--pink),var(--purple),var(--blue));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .sub{
+      margin:14px 0 0;
+      font-size:14px;
+      line-height:1.85;
+      color:var(--sub);
+    }
+
+    .hero-visual{
+      margin-top:22px;
+      position:relative;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:260px;
+    }
+
+    .sparkle{
+      position:absolute;
+      font-size:18px;
+      animation:float 4s ease-in-out infinite;
+      opacity:.85;
+    }
+
+    .s1{ top:12px; left:26px; animation-delay:0s; }
+    .s2{ top:32px; right:30px; animation-delay:1s; }
+    .s3{ bottom:28px; left:44px; animation-delay:1.8s; }
+    .s4{ bottom:20px; right:42px; animation-delay:2.5s; }
+
+    @keyframes float{
+      0%,100%{ transform:translateY(0); }
+      50%{ transform:translateY(-8px); }
+    }
+
+    .big-card{
+      width:230px;
+      aspect-ratio:1.58 / 1;
+      border-radius:24px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.85), transparent 20%),
+        linear-gradient(135deg, #ff9fc8 0%, #a08cff 54%, #83c8ff 100%);
+      box-shadow:
+        0 22px 40px rgba(124,92,255,.20),
+        inset 0 1px 0 rgba(255,255,255,.4);
+      transform:rotate(-8deg);
+      padding:16px;
+      color:white;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .big-card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg, rgba(255,255,255,.22), transparent 35%);
+      pointer-events:none;
+    }
+
+    .big-card-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.08em;
+    }
+
+    .big-card-title{
+      position:absolute;
+      left:18px;
+      bottom:20px;
+      font-weight:900;
+      font-size:21px;
+      line-height:1.25;
+      letter-spacing:-0.03em;
+    }
+
+    .bubble{
+      margin-top:16px;
+      padding:14px 14px;
+      border-radius:22px;
+      background:linear-gradient(135deg,#fff7fb,#f6f3ff,#f4faff);
+      border:1px solid rgba(138,108,255,.1);
+      text-align:center;
+      font-size:14px;
+      line-height:1.75;
+      font-weight:700;
+      color:#5b4f76;
+    }
+
+    .flow{
+      margin-top:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      text-align:center;
+    }
+
+    .node{
+      width:92px;
+    }
+
+    .circle{
+      width:62px;
+      height:62px;
+      border-radius:50%;
+      margin:0 auto 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      background:#fff;
+      box-shadow:0 10px 25px rgba(95,80,144,.08);
+      border:1px solid rgba(138,108,255,.08);
+    }
+
+    .node span{
+      display:block;
+      font-size:12px;
+      font-weight:800;
+      color:#5f5772;
+      line-height:1.45;
+    }
+
+    .arrow{
+      font-size:18px;
+      color:#c9c1da;
+      margin-top:-20px;
+      font-weight:900;
+    }
+
+    .support-boxes{
+      display:grid;
+      gap:12px;
+      margin-top:20px;
+    }
+
+    .support-box{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      padding:16px;
+      border-radius:24px;
+      background:rgba(255,255,255,.82);
+      border:1px solid rgba(138,108,255,.08);
+      box-shadow:0 10px 24px rgba(95,80,144,.06);
+    }
+
+    .icon{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      font-size:24px;
+    }
+
+    .i1{ background:#f3edff; }
+    .i2{ background:#eef6ff; }
+    .i3{ background:#fff3f8; }
+
+    .support-box h2{
+      margin:2px 0 6px;
+      font-size:18px;
+      line-height:1.35;
+      letter-spacing:-0.02em;
+    }
+
+    .support-box p{
+      margin:0;
+      font-size:13px;
+      line-height:1.8;
+      color:var(--sub);
+    }
+
+    .emotion{
+      margin-top:18px;
+      padding:18px 16px;
+      border-radius:28px;
+      background:linear-gradient(135deg,var(--pink),var(--purple),var(--blue));
+      color:white;
+      text-align:center;
+      box-shadow:0 18px 38px rgba(124,92,255,.22);
+    }
+
+    .emotion strong{
+      display:block;
+      font-size:24px;
+      line-height:1.45;
+      letter-spacing:-0.03em;
+      margin-bottom:8px;
+    }
+
+    .emotion p{
+      margin:0;
+      font-size:13px;
+      line-height:1.8;
+      opacity:.95;
+    }
+
+    .bottom{
+      position:relative;
+      z-index:2;
+      margin-top:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .nav-btn{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      height:54px;
+      padding:0 18px;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s;
+      touch-action:manipulation;
+    }
+
+    .nav-btn:active{
+      transform:scale(.98);
+    }
+
+    .ghost{
+      background:rgba(255,255,255,.76);
+      color:#6f6880;
+      border:1px solid rgba(138,108,255,.10);
+      min-width:96px;
+    }
+
+    .primary{
+      flex:1;
+      background:linear-gradient(135deg,var(--pink),var(--purple));
+      color:white;
+      box-shadow:0 14px 28px rgba(138,108,255,.22);
+    }
+
+    .primary.final{
+      background:linear-gradient(135deg,#ff8abf,#9a82ff,#7fc3ff);
+    }
+
+    .hint{
+      text-align:center;
+      font-size:11px;
+      color:#958ea8;
+      margin-top:8px;
+      line-height:1.6;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="slides" id="slides">
+      <section class="slide">
+        <div>
+          <div class="topbar">
+            <div class="progress">
+              <span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="mini">1 / 5</div>
+          </div>
+
+          <div class="card">
+            <div class="content">
+              <div class="badge">💳 これは、ただのカードじゃない</div>
+              <h1>あなたの<br><span class="accent">「好き」</span>を、応援の力に。</h1>
+              <p class="sub">かわいい、すてき、持ちたい。<br>そんな気持ちで選んだカードが、<br>クリエイターを支えることにつながります。</p>
+              <div class="hero-visual">
+                <span class="sparkle s1">✨</span>
+                <span class="sparkle s2">💖</span>
+                <span class="sparkle s3">✦</span>
+                <span class="sparkle s4">♡</span>
+                <div class="big-card">
+                  <div class="big-card-top"><span>CREATORS CARD</span><span>♡</span></div>
+                  <div class="big-card-title">好きなデザインを、<br>手元に。</div>
+                </div>
+              </div>
+              <div class="bubble">“使うためのカード”だけじゃなく、<br>“想いをのせるカード”へ。</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="bottom">
+            <button class="nav-btn ghost" disabled style="opacity:.45;">もどる</button>
+            <button class="nav-btn primary" onclick="nextSlide()">次へ</button>
+          </div>
+          <div class="hint">下のボタンで紙芝居のように進みます</div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <div class="topbar">
+            <div class="progress">
+              <span class="dot active"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="mini">2 / 5</div>
+          </div>
+          <div class="card">
+            <div class="content">
+              <div class="badge">🎨 好きなデザインを選ぶ</div>
+              <h1>“この1枚が好き”<br>その気持ちから<br>はじまる。</h1>
+              <p class="sub">ただ機能で選ぶのではなく、<br>自分の感性で選ぶ。<br>その選択が、ファンとクリエイターをつなぎます。</p>
+              <div class="hero-visual">
+                <div class="big-card" style="transform:rotate(-10deg) translateX(18px); position:absolute; opacity:.6; filter:saturate(.9);"></div>
+                <div class="big-card" style="transform:rotate(7deg) translateX(-18px); position:absolute; opacity:.6; filter:saturate(.95);"></div>
+                <div class="big-card" style="transform:rotate(-2deg); position:relative;">
+                  <div class="big-card-top"><span>MY FAVORITE</span><span>✨</span></div>
+                  <div class="big-card-title">持っているだけで、<br>うれしい。</div>
+                </div>
+              </div>
+              <div class="bubble">“好きだから選ぶ” を、<br>ちゃんと価値にできるカードです。</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="bottom">
+            <button class="nav-btn ghost" onclick="prevSlide()">もどる</button>
+            <button class="nav-btn primary" onclick="nextSlide()">次へ</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <div class="topbar">
+            <div class="progress">
+              <span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="mini">3 / 5</div>
+          </div>
+          <div class="card">
+            <div class="content">
+              <div class="badge">🤝 ファンとクリエイターがつながる</div>
+              <h1>あなたが選んだ1枚が、<br>クリエイターへの<br><span class="accent">応援</span>になる。</h1>
+              <p class="sub">そのデザインを生み出したクリエイターへ、<br>カードを通じて収益が還元されます。<br>好きが、ちゃんと届く仕組みです。</p>
+              <div class="flow">
+                <div class="node"><div class="circle">👤</div><span>あなた</span></div>
+                <div class="arrow">→</div>
+                <div class="node"><div class="circle">💳</div><span>カードを選ぶ</span></div>
+                <div class="arrow">→</div>
+                <div class="node"><div class="circle">🎨</div><span>クリエイターに還元</span></div>
+              </div>
+              <div class="bubble" style="margin-top:22px;">“応援したい”を、特別な行動にしなくていい。<br>好きなものを選ぶだけでいい。</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="bottom">
+            <button class="nav-btn ghost" onclick="prevSlide()">もどる</button>
+            <button class="nav-btn primary" onclick="nextSlide()">次へ</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <div class="topbar">
+            <div class="progress">
+              <span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot"></span>
+            </div>
+            <div class="mini">4 / 5</div>
+          </div>
+          <div class="card">
+            <div class="content">
+              <div class="badge">🌷 応援は、続いていく</div>
+              <h1>作るときも。<br>使うときも。<br>支援になる。</h1>
+              <p class="sub">カードを発行したときだけでなく、<br>日々のお買い物で使うたびに、<br>クリエイターへの還元が積み重なっていきます。</p>
+              <div class="support-boxes">
+                <div class="support-box">
+                  <div class="icon i1">①</div>
+                  <div><h2>カードを作る</h2><p>発行した時点で、クリエイターに還元されます。</p></div>
+                </div>
+                <div class="support-box">
+                  <div class="icon i2">②</div>
+                  <div><h2>お買い物で使う</h2><p>日常の利用でも、支援が続いていきます。</p></div>
+                </div>
+                <div class="support-box">
+                  <div class="icon i3">③</div>
+                  <div><h2>長く応援できる</h2><p>一度きりではなく、使い続けるほど支援も続きます。</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="bottom">
+            <button class="nav-btn ghost" onclick="prevSlide()">もどる</button>
+            <button class="nav-btn primary" onclick="nextSlide()">次へ</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide">
+        <div>
+          <div class="topbar">
+            <div class="progress">
+              <span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot active"></span><span class="dot active"></span>
+            </div>
+            <div class="mini">5 / 5</div>
+          </div>
+          <div class="card">
+            <div class="content">
+              <div class="badge">💖 最後に伝えたいこと</div>
+              <h1>あなたの「好き」が、<br>誰かの創作を<br>支える力になる。</h1>
+              <p class="sub">ファンの気持ちと、クリエイターの活動。<br>このカードは、そのあいだにある距離を少し近づけます。<br>デザインを楽しみながら、自然に応援できる。<br>そんな、あたたかいカードです。</p>
+              <div class="emotion">
+                <strong>好きなデザインを選ぶことが、<br>応援になる。</strong>
+                <p>クリエイターとファンをつなぐ、<br>新しいカードのかたち。</p>
+              </div>
+              <div class="bubble" style="margin-top:20px;">ただ持つだけじゃない。<br>想いまで一緒に持ち歩けるカードへ。</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="bottom">
+            <button class="nav-btn ghost" onclick="prevSlide()">もどる</button>
+            <button class="nav-btn primary final" onclick="goFirst()">最初から見る</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    let current = 0;
+    const slides = document.getElementById('slides');
+    const total = 5;
+
+    function updateSlide() {
+      slides.style.transform = 'translateX(-' + current * 20 + '%)';
+    }
+
+    function nextSlide() {
+      if (current < total - 1) {
+        current++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (current > 0) {
+        current--;
+        updateSlide();
+      }
+    }
+
+    function goFirst() {
+      current = 0;
+      updateSlide();
+    }
+
+    // iFrame内ではスワイプ判定がボタンタップを阻害しやすいため、
+    // 遷移操作はボタンタップのみに限定する。
+  </script>
+</body>
+</html>
