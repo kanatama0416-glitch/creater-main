@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>作品を登録する | CREATOR'S CARD</title>
+    <style>
+      :root {
+        --primary-purple: #6366f1;
+        --bg-color: #f9fafb;
+        --card-bg: #ffffff;
+        --input-border: #e5e7eb;
+        --text-main: #374151;
+        --text-sub: #6b7280;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding: 40px 20px;
+        line-height: 1.6;
+      }
+
+      .logo {
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        color: var(--primary-purple);
+        margin-bottom: 40px;
+        text-transform: uppercase;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-sub);
+        text-decoration: none;
+        margin-bottom: 16px;
+      }
+
+      .back-link::before {
+        content: "←";
+        font-size: 0.9rem;
+      }
+
+      .back-link:hover {
+        color: var(--text-main);
+      }
+
+      .title-area {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .title-area h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        font-style: italic;
+        margin-bottom: 8px;
+      }
+
+      .title-area p {
+        color: var(--text-sub);
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+      }
+
+      .form-group {
+        margin-bottom: 28px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        color: var(--text-main);
+      }
+
+      .file-upload-wrapper {
+        position: relative;
+        border: 2px dashed var(--input-border);
+        border-radius: 16px;
+        padding: 40px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      .file-upload-wrapper:hover {
+        border-color: var(--primary-purple);
+        background: #fdfdff;
+      }
+
+      .upload-preview {
+        display: none;
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 12px;
+      }
+
+      .file-upload-wrapper.has-preview .upload-preview {
+        display: block;
+      }
+
+      .file-upload-wrapper.has-preview .upload-hint {
+        color: var(--text-sub);
+      }
+
+      .upload-note {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.75rem;
+        color: var(--text-sub);
+      }
+
+      input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .upload-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        margin-bottom: 8px;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-purple);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      input[type="text"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--input-border);
+        border-radius: 99px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        background-color: #fff;
+      }
+
+      textarea {
+        border-radius: 20px;
+        height: 140px;
+        resize: none;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+      }
+
+      .btn-submit {
+        display: block;
+        width: 100%;
+        padding: 16px;
+        background-color: var(--primary-purple);
+        color: white;
+        border: none;
+        border-radius: 99px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: transform 0.2s, background 0.2s;
+      }
+
+      .btn-submit:hover {
+        background-color: #4f46e5;
+        transform: translateY(-2px);
+      }
+
+      .btn-submit:active {
+        transform: translateY(0);
+      }
+
+      .footer-text {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-sub);
+        margin-top: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">CREATOR'S CARD</div>
+
+    <div class="container">
+      <a href="/" class="back-link">戻る</a>
+      <div class="title-area">
+        <h1>「ワクワク」を登録する。</h1>
+        <p>SHARE YOUR MASTERPIECE</p>
+      </div>
+
+      <form action="#" method="POST">
+        <div class="form-group">
+          <label>作品画像</label>
+          <div class="file-upload-wrapper">
+            <img class="upload-preview" alt="アップロードした作品のプレビュー" />
+            <span class="upload-hint" style="font-size: 0.9rem; color: #6b7280;">
+              画像をドラッグ＆ドロップ、またはクリック
+            </span>
+            <input type="file" name="image" accept="image/*" required />
+          </div>
+          <span class="upload-note">※画像の審査通過後にページにアップされます。</span>
+        </div>
+
+        <div class="form-group">
+          <label for="name">クリエイター名</label>
+          <input type="text" id="name" name="name" placeholder="お名前を入力" required />
+        </div>
+
+        <div class="form-group">
+          <label for="genre">ジャンル</label>
+          <div class="select-wrapper">
+            <select id="genre" name="genre" required>
+              <option value="" disabled selected>選択してください</option>
+              <option value="character">キャラクター</option>
+              <option value="modern_art">現代アート</option>
+              <option value="traditional">伝統</option>
+              <option value="life">生活</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="thoughts">作品への想い</label>
+          <textarea
+            id="thoughts"
+            name="thoughts"
+            placeholder="この作品に込めたワクワクを教えてください"
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">このデザインを公開する</button>
+      </form>
+    </div>
+
+    <p class="footer-text">ワクワクするデザインをシェアしましょう</p>
+    <script>
+      const uploadWrapper = document.querySelector(".file-upload-wrapper");
+      const uploadInput = uploadWrapper?.querySelector("input[type='file']");
+      const previewImage = uploadWrapper?.querySelector(".upload-preview");
+
+      if (uploadInput && previewImage && uploadWrapper) {
+        uploadInput.addEventListener("change", () => {
+          const file = uploadInput.files && uploadInput.files[0];
+          if (!file) {
+            previewImage.src = "";
+            uploadWrapper.classList.remove("has-preview");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            previewImage.src = event.target?.result || "";
+            uploadWrapper.classList.add("has-preview");
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    </script>
+  </body>
+</html>
