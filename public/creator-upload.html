@@ -338,6 +338,13 @@
           window.SUPABASE_ANON_KEY
         );
 
+        if (form && form.dataset.bound === "1") {
+          return;
+        }
+        if (form) {
+          form.dataset.bound = "1";
+        }
+
         form?.addEventListener("submit", async (event) => {
           event.preventDefault();
           if (isSubmitting) return;
