@@ -104,7 +104,11 @@ function App() {
 
       if (faqsError) throw faqsError;
 
-      const dedupedSubmissions = dedupeSubmissions(submissionsData || []);
+      const cardsImageUrls = new Set((cardsData || []).map((c) => c.image_url));
+      const submissionsNotInCards = (submissionsData || []).filter(
+        (s) => !cardsImageUrls.has(s.image_url)
+      );
+      const dedupedSubmissions = dedupeSubmissions(submissionsNotInCards);
       const mappedSubmissions = dedupedSubmissions.map((submission) =>
         mapSubmissionToCard(submission)
       );
