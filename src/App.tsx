@@ -1,5 +1,5 @@
-﻿import { useState, useEffect, useMemo } from 'react';
-import { supabase, Card, FAQ, isSupabaseConfigured } from './lib/supabase';
+import { useState, useEffect, useMemo } from 'react';
+import { supabase, Card, CardSubmission, FAQ, isSupabaseConfigured } from './lib/supabase';
 import { localCardSlots } from './lib/localCardSlots';
 import { HeroSection } from './components/HeroSection';
 import { FeaturesSection } from './components/FeaturesSection';
@@ -31,6 +31,34 @@ function App() {
     fetchData();
   }, []);
 
+  const mapSubmissionToCard = (submission: CardSubmission): Card => {
+    const creatorName = submission.creator_name?.trim() || '匿名クリエイター';
+    const creatorId = `submission-${submission.id}`;
+    const createdAt = submission.created_at ?? new Date(0).toISOString();
+    return {
+      id: `submission-${submission.id}`,
+      creator_id: creatorId,
+      title: `${creatorName}の作品`,
+      description: null,
+      image_url: submission.image_url,
+      concept: submission.concept,
+      created_at: createdAt,
+      creator: {
+        id: creatorId,
+        name: creatorName,
+        bio: null,
+        twitter_url: null,
+        instagram_url: null,
+        website_url: null,
+        note_url: null,
+        youtube_url: null,
+        avatar_url: null,
+        comment: submission.concept,
+        created_at: createdAt
+      }
+    };
+  };
+
   const fetchData = async () => {
     if (!isSupabaseConfigured || !supabase) {
       console.warn(
@@ -41,6 +69,13 @@ function App() {
     }
 
     try {
+      const { data: submissionsData, error: submissionsError } = await supabase
+        .from('card_submissions')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (submissionsError) throw submissionsError;
+
       const { data: cardsData, error: cardsError } = await supabase
         .from('cards')
         .select(`
@@ -58,7 +93,13 @@ function App() {
 
       if (faqsError) throw faqsError;
 
-      setCards(cardsData || []);
+      const mappedSubmissions = (submissionsData || []).map((submission) =>
+        mapSubmissionToCard(submission)
+      );
+      const remoteCards = [...mappedSubmissions, ...(cardsData || [])];
+      const mergedCards = [...remoteCards, ...localCardSlots];
+
+      setCards(mergedCards);
       setFaqs(faqsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
