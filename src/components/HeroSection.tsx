@@ -34,12 +34,18 @@ export function HeroSection({ onCardClick }: HeroSectionProps) {
     <>
       <header className="p-6 bg-white/80 backdrop-blur-md sticky top-0 z-[200]">
         <h1 className="font-bold text-xl text-center text-indigo-600 tracking-widest uppercase">
-          Art Card
+          Creator's Card
         </h1>
       </header>
 
       <section className="bg-slate-50 px-6 pb-2">
-        <section className="py-10 text-center">
+        <section className="relative py-10 text-center">
+          <a
+            href="/creator-upload.html"
+            className="absolute right-0 top-2 rounded-full bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-indigo-500 hover:shadow"
+          >
+            作品を登録する
+          </a>
           <h2 className="text-2xl font-bold mb-4 italic">
             あなたの「ワクワク」が、
             <br />

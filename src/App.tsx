@@ -24,6 +24,8 @@ function App() {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [creatorQuery, setCreatorQuery] = useState('');
+  const [showCreatorCardAbout, setShowCreatorCardAbout] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -70,14 +72,24 @@ function App() {
     return [...displayCards].sort(() => Math.random() - 0.5);
   }, [displayCards]);
   const filteredCards = useMemo(() => {
-    if (!selectedGenre) return randomizedCards;
-
+    const normalizedQuery = creatorQuery.trim().toLowerCase();
     return randomizedCards.filter((card) => {
       const creatorName = card.creator?.name;
       if (!creatorName) return false;
-      return creatorGenreByName[creatorName] === selectedGenre;
+      if (selectedGenre && creatorGenreByName[creatorName] !== selectedGenre) return false;
+      if (!normalizedQuery) return true;
+      return creatorName.toLowerCase().includes(normalizedQuery);
     });
-  }, [randomizedCards, selectedGenre]);
+  }, [randomizedCards, selectedGenre, creatorQuery]);
+  const creatorNameOptions = useMemo(() => {
+    const names = new Set<string>();
+    displayCards.forEach((card) => {
+      if (card.creator?.name) {
+        names.add(card.creator.name);
+      }
+    });
+    return Array.from(names).sort((a, b) => a.localeCompare(b, 'ja'));
+  }, [displayCards]);
 
   if (loading) {
     return (
@@ -108,7 +120,18 @@ function App() {
       <section className="pt-3 pb-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-gray-600 text-lg">{'ワクワクを探してみましょう'}</p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowCreatorCardAbout(true)}
+                className="rounded-full border border-indigo-200 bg-white px-5 py-2 text-sm font-semibold text-indigo-600 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow"
+              >
+                クリエイターカードについて
+              </button>
+            </div>
+            <p className="mt-4 text-gray-600 text-lg">
+              {'ワクワクするデザインをクリックしてみましょう'}
+            </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               {genreOptions.map((genre) => (
                 <button
@@ -125,14 +148,32 @@ function App() {
                 </button>
               ))}
             </div>
+            <div className="mt-4 flex justify-center">
+              <label className="w-full max-w-md">
+                <span className="sr-only">クリエイター名で検索</span>
+                <input
+                  type="search"
+                  value={creatorQuery}
+                  onChange={(event) => setCreatorQuery(event.target.value)}
+                  placeholder="クリエイター名で検索"
+                  list="creator-name-suggestions"
+                  className="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+                />
+              </label>
+              <datalist id="creator-name-suggestions">
+                {creatorNameOptions.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
+            </div>
           </div>
           <CardGrid cards={filteredCards} onCardClick={setSelectedCard} />
         </div>
       </section>
 
-      <FeaturesSection />
-
       <SupportSection />
+
+      <FeaturesSection />
 
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,6 +191,28 @@ function App() {
           </p>
         </div>
       </footer>
+
+      {showCreatorCardAbout && (
+        <div className="fixed inset-0 z-[300] bg-black/50 p-4">
+          <div className="mx-auto flex h-full w-full max-w-md min-h-0 flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+              <h3 className="text-sm font-bold text-slate-700">クリエイターカードについて</h3>
+              <button
+                type="button"
+                onClick={() => setShowCreatorCardAbout(false)}
+                className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600"
+              >
+                閉じる
+              </button>
+            </div>
+            <iframe
+              src="/creator-card-about.html"
+              title="クリエイターカードについて"
+              className="h-full min-h-0 w-full flex-1 border-0 [touch-action:manipulation]"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
