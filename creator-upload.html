@@ -240,7 +240,7 @@
         <p>SHARE YOUR MASTERPIECE</p>
       </div>
 
-      <form id="creator-upload-form" action="#" method="POST">
+      <form id="creator-upload-form" action="#" novalidate>
         <div class="form-group">
           <label>作品画像</label>
           <div class="file-upload-wrapper">
@@ -286,7 +286,7 @@
     </div>
 
     <p class="footer-text">ワクワクするデザインをシェアしましょう</p>
-    <script src="/supabase-config.js"></script>
+    <script src="supabase-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
     <script>
       const uploadWrapper = document.querySelector(".file-upload-wrapper");
@@ -329,20 +329,27 @@
         submitButton.style.cursor = isSubmitting ? "not-allowed" : "pointer";
       }
 
-      if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
-        setStatus("Supabase設定が見つかりません。supabase-config.jsを確認してください。", "error");
-      } else if (window.supabase?.createClient) {
+      form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+          setStatus("Supabase設定が見つかりません。supabase-config.jsを確認してください。", "error");
+          return;
+        }
+        if (!window.supabase?.createClient) {
+          setStatus("Supabaseライブラリが読み込めませんでした。ページを再読み込みしてください。", "error");
+          return;
+        }
+
         const supabase = window.supabase.createClient(
           window.SUPABASE_URL,
           window.SUPABASE_ANON_KEY
         );
 
-        form?.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          setStatus("", null);
-          setSubmitting(true);
+        setStatus("", null);
+        setSubmitting(true);
 
-          const formData = new FormData(form);
+        const formData = new FormData(form);
           const imageFile = formData.get("image");
           const creatorName = (formData.get("name") || "").toString().trim();
           const genre = (formData.get("genre") || "").toString();
@@ -356,6 +363,12 @@
 
           if (!creatorName) {
             setStatus("クリエイター名を入力してください。", "error");
+            setSubmitting(false);
+            return;
+          }
+
+          if (!genre) {
+            setStatus("ジャンルを選択してください。", "error");
             setSubmitting(false);
             return;
           }
@@ -414,8 +427,7 @@
           } finally {
             setSubmitting(false);
           }
-        });
-      }
+      });
     </script>
   </body>
 </html>
