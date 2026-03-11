@@ -339,18 +339,15 @@
         );
 
         if (form && form.dataset.bound === "1") {
-          return;
-        }
-        if (form) {
+          // Already bound
+        } else if (form) {
           form.dataset.bound = "1";
-        }
-
-        form?.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          if (isSubmitting) return;
-          isSubmitting = true;
-          setStatus("", null);
-          setSubmitting(true);
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (isSubmitting) return;
+            isSubmitting = true;
+            setStatus("", null);
+            setSubmitting(true);
 
           const formData = new FormData(form);
           const imageFile = formData.get("image");
@@ -420,6 +417,7 @@
             setSubmitting(false);
           }
         });
+        }
       }
     </script>
   </body>
