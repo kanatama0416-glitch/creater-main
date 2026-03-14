@@ -241,14 +241,6 @@ function App() {
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400">
-            &copy; 2024 {'\u30af\u30ea\u30a8\u30a4\u30bf\u30fc\u30ba\u30ab\u30fc\u30c9'}. All rights reserved.
-          </p>
-        </div>
-      </footer>
-
       {showCreatorCardAbout && (
         <div className="fixed inset-0 z-[300] bg-black/50 p-4">
           <div className="mx-auto flex h-full w-full max-w-md min-h-0 flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
