@@ -1,4 +1,4 @@
-import { Heart, Palette, Gift, ShieldCheck } from 'lucide-react';
+import { Heart, Palette, Backpack } from 'lucide-react';
 
 export function FeaturesSection() {
   const features = [
@@ -13,14 +13,9 @@ export function FeaturesSection() {
       description: 'カード利用でクリエイターを直接応援できる',
     },
     {
-      icon: Gift,
-      title: '充実のポイント還元',
-      description: '最大5%のポイント還元でお得にお買い物',
-    },
-    {
-      icon: ShieldCheck,
-      title: '安心のセキュリティ',
-      description: '業界最高水準のセキュリティで安全に利用',
+      icon: Backpack,
+      title: '好きを持ち歩こう',
+      description: 'お気に入りのクリエイター作品をいつでも一緒に持ち運べる',
     },
   ];
 
