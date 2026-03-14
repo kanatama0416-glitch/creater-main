@@ -187,7 +187,7 @@ function App() {
               </button>
             </div>
             <p className="mt-4 text-gray-600 text-lg">
-              {'ワクワクするデザインをクリックしてみましょう'}
+              {'ワクワクするデザインをクリックしてみよう！'}
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               {genreOptions.map((genre) => (
